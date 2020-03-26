@@ -126,9 +126,10 @@ A configuration `.ini` file typically contains a number of sections, each contai
 		+ `minValidConc`: minimum valid concentration, for all constituents (pixels whose concentrations are less than `minValidConc` are deemed to be invalid)
 		+ `outputFillValue`: defines the 'no-data' fill value (used for most output arrays)
 		+ `costThreshhold`: upper cost limit for pixels to be accepted during the aLMI procedure (pixels must have a cost < `costThreshhold`); this is equivalent to the `D_R_THRESHOLD` variable in the IDL code  
+	  
 	_Example:_   
 	chunkProcessConfig = {'costType':'RMSE', 'minValidConc':0.00001, 'outputFillValue':-999., 'costThreshhold':100.}
-	- `inputType`: type of data provided in the input file (one of `reflAboveSurf`, `reflBelowSurf`, `uIopRatio`)
+	- `inputType`: type of data provided in the input file (one of `reflAboveSurf`, `reflBelowSurf`, `uIopRatio`)  
 	_Example:_ inputType = reflAboveSurf
 	- `numberOfLinesPerChunk`: processing of the input data occurs in chunks to lower the memory requirements; this parameter corresponds to the number of lines of input data to process in each chunk  
 	_Example:_ numberOfLinesPerChunk = 500  
@@ -198,6 +199,5 @@ Of course, the user should ultimately select a MEM amount that is large enough t
 
 
 &nbsp;
-#### Author
-**Eric Lehmann**, CSIRO Data61, March 2020.
+**Author:** Eric Lehmann, CSIRO Data61, March 2020.
 
