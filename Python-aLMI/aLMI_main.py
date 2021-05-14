@@ -386,7 +386,7 @@ def aLMI_main():
         var_out[:] = var_in[:]      #== copy data 'as-is' from input variable to the created output variable
 
     # Copy the global attributes:   #== some hardcoded?...
-    ## TODO: Get (some of?) these from the config file. #==
+    ## TODO: Get (some of?) these from the config file.
     global_attrs_in = lmi_io.generic_io.get_attrs(handle)		# an OrderedDict
     global_attrs = OrderedDict()
     global_attrs['ATMCORR_VERSION'] = global_attrs_in.get('ATMCORR VERSION', global_attrs_in.get('ATMCORR_VERSION'))
@@ -413,7 +413,7 @@ def aLMI_main():
 
     ##########
     # Create output file variables, and make a list of the variable objects that we can use to write into later on
-    concVarObjList = []
+    concVarObjList = []   #== concentrations var obj list
     concUnits = {'CHL':'ug/l', 'CDOM':'m-1', 'NAP':'mg/L'}		# get from config?  #== hardcoded
     for j in range(nCOMPs):
         var_name = components[j] + '_MIM'
@@ -547,6 +547,7 @@ def aLMI_main():
         index_expr = (slice(startOfChunk,endOfChunk), slice(None, None))    #== line indices; all pixels per line
 
         # extract this slice of refls|uIOPRatio.
+        #== The code below assumes that the inputSpectrumVarNames/in_var_names can be found in ANN_FILE...
         input_WL_LINE_PIX = lmi_io.get_reflectances(handle, in_var_names, index_expr=index_expr, verbose=(inputArgs.verbosity >= 1))
 
         ### CHECK THE DATA ###
@@ -557,7 +558,7 @@ def aLMI_main():
         input_WL_EL.shape = WL_EL_shape = (nWLs, nELs)      #== re-shapes input_WL_EL into a nWLs x nELs array
         ok = np.all(input_WL_EL > 0.000001, axis=0)   
                 #== array of booleans, 1 x nELs    #== conc?!...   # locate pixels where all concentrations are valid (TODO:  add 'minInput' config parameter)
-        ok_index = np.nonzero(ok)[0]    #== indices of non-zero elements (of length <= nELs)                                                                            
+        ok_index = np.nonzero(ok)[0]    #== indices of non-zero/True elements (of length <= nELs)                                                                            
 
         nValid = len(ok_index)
         if nValid > 0:
@@ -568,7 +569,7 @@ def aLMI_main():
                 print("no valid pixels; skip this chunk")
             continue
 
-        inputValid_WL_EL = input_WL_EL[:,ok]                                                                              
+        inputValid_WL_EL = input_WL_EL[:,ok]
         if Once and (inputArgs.verbosity >= 1):
             print("inputValid_WL_EL.shape =", inputValid_WL_EL.shape)
             print("input_WL_LINE_PIX.shape =", input_WL_LINE_PIX.shape)
@@ -763,7 +764,8 @@ def aLMI_main():
         # a_budget_MIM_441 
 
         Once = False
-
+    #== End: for chunkIndex in range(numberOfChunks)
+    
     # CLOSE FILES - is this the best place to do this?
     lmi_io.generic_io.close(writeHandle, verbose=True)
     lmi_io.generic_io.close(handle, verbose=True)
@@ -777,7 +779,7 @@ def aLMI_main():
                 print("variable '" + key + "' type is", vtype, "; shape is", eval(key + '.shape'), "; OWNDATA =", eval(key + '.flags["OWNDATA"]'))
             else:
                 print("variable '" + key + "' type is", vtype)
-
+    
     print(ME + " done")    
 
 # The '__main__' entry point.

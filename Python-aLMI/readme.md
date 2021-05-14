@@ -111,10 +111,10 @@ A configuration `.ini` file typically contains a number of sections, each contai
 * Section `[inputParameters]`:
 	- `SIOP_SETS_FILE`: path to the file of SIOP sets (`.nc` file)  
 	_Example:_ SIOP_SETS_FILE = /g/data/r78/aLMI/data/siops_MODIS_all_CLT4.nc
-	- `inputSpectrumVarNames`: list of strings representing the names of the reflectance bands that will be used by aLMI.  
+	- `inputSpectrumVarNames`: list of strings representing the names of the reflectance bands to use by aLMI.  
 	**Note**: these must match the band names in the input data file to aLMI.  
 	_Example:_ inputSpectrumVarNames = \["Rrs_412" , "Rrs_443" , "Rrs_488"\]
-	- `useWavelengths`: vector of wavelengths (in nm) for which to extract the SIOPs from the SIOP sets file.  
+	- `useWavelengths`: vector of wavelengths (in nm) for which to extract the SIOPs from the SIOP sets file (likely corresponding wavelengths to the reflectance bands in  `inputSpectrumVarNames`).  
 	**Note**: this vector must have the same number of elements as `inputSpectrumVarNames`.  
 	_Example:_ useWavelengths = \[411.5, 441.5, 486.5\]
 	- `tolerance`: tolerance (in nm) to use around the stated wavelength values in `useWavelengths` when extracting the SIOP sets (i.e., if found, the extracted SIOP sets' wavelengths will be within +/- `tolerance` of the desired value)  
@@ -183,20 +183,21 @@ A configuration `.ini` file typically contains a number of sections, each contai
 &nbsp;
 ## A note on selecting resources for Gadi jobs
 
-The selection of walltime and memory resources for PBS jobs to be executed on Gadi (see PBS directives `PBS -l mem=...` and `PBS -l walltime=...` above, under 'Running the aLMI code on Gadi') obviously depends on the size of the input dataset to process (total number of pixels, number of 'no-data' values, etc.). Some trial and error is typically needed at first in order to select optimal walltime and memory values for a given input dataset.
+The selection of walltime and memory resources for PBS jobs to be executed on Gadi (see PBS directives `PBS -l mem=...` and `PBS -l walltime=...` above, under 'Running the aLMI code on Gadi') obviously depends on the characteristics and size of the input dataset to process (total number of pixels, number of 'no-data' values, etc.). Some trial and error is typically needed at first in order to select optimal walltime and memory values for a given input dataset.
 
-One aspect of Gadi is that the cost (to the selected NCI project, in Service Units) of a batch job execution depends the largest contribution from either: a) the amount of CPU time required by the job (i.e. number of CPUs multiplied by walltime), or b) the requested amount of memory (proportionally to the total amount of memory available on each node). The previous NCI system (Raijin) only accounted for the CPU time in the cost calculations.
+One aspect of Gadi, however, is that the cost (to the selected NCI project, in Service Units) of a batch job execution depends the largest contribution from either: a) the amount of CPU time **required** by the job (i.e. number of CPUs multiplied by walltime), or b) the **requested** amount of memory (proportionally to the total amount of memory available on each node). The previous NCI system (Raijin) only accounted for the CPU time in the cost calculations.
 
-This means that on Gadi, it is important to avoid grossly over-estimating the MEM requirements for a given job. Similarly, it is most economical to keep the CPU and MEM requirements consistent. 
+This means that on Gadi, it is important to avoid grossly over-estimating the MEM requirements for a given job. Similarly, it is most economical to keep the CPU and MEM requirements consistent and balanced. 
 
 For instance, given that the above aLMI code is not currently parallelised, it is only worth submitting a job with `PBS -l ncpus=1`. Also, each node on Gadi has 48 CPUs and a total of 192GB of RAM available. Thus, selecting `PBS -l mem=4GB` for some aLMI job will be on a par with the CPU requirements, as the CPU equivalent of this MEM requirement is 48 x 4GB / 192GB = 1 CPU. Selecting any MEM value larger than 4GB (for a single-threaded job) will thus increase the execution cost to the selected project. For instance, 8GB of MEM would achieve the same cost as if 2 CPUs were selected for this job (though the above code would be unable to actually take advantage of having more than one CPU). 
 
 For illustration, another (hypothetical) example is as follows. If a given (parallelised) NCI job is submitted with a request for 10 CPUs, the user could also request up to 40GB of RAM for the job without incurring any extra cost, since 48 x 40GB / 192GB = 10.
 
-Of course, the user should ultimately select a MEM amount that is large enough to process a given input dataset (or face the inevitable prospect of the code crashing with some potentially cryptic error message!). Keep in mind, however, that the MEM requirements can be altered by means of the `numberOfLinesPerChunk` parameter above: a smaller `numberOfLinesPerChunk` leads to a lower MEM requirement.
+Of course, the user should ultimately select a MEM amount that is large enough to process a given input dataset (or face the inevitable prospect of the code crashing into a heap of cryptic error messages!). Keep in mind, however, that the MEM requirements can be altered by means of the `numberOfLinesPerChunk` parameter above: a smaller `numberOfLinesPerChunk` leads to a lower MEM requirement.
 
 
+&nbsp; 
+## 
 
-&nbsp; &nbsp;
-**Author:** Eric Lehmann, CSIRO Data61, March 2020.
-
+**Author:** Eric A. Lehmann, CSIRO Data61  
+**Date**: March 2020.
